@@ -1,0 +1,89 @@
+{
+    "2022-09-11": {
+        "hash1": {
+            "prox_passo": ["hash1-1", "hash1-2", "hash2"],
+            "flags": ["funil", "inicial"],
+            "acessos": 50
+        },
+        "hash1-1": {
+            "prox_passo": [],
+            "acessos": 2
+        },
+        "hash1-2": {
+            "prox_passo": [],
+            "acessos": 4
+        },
+        "hash2": {
+            "prox_passo": ["hash2-1", "hash3"],
+            "flags": ["funil"],
+            "acessos": 44
+        },
+        "hash2-1": {
+            "prox_passo": [],
+            "acessos": 8
+        },
+        "hash3": {
+            "prox_passo": [],
+            "flags": ["funil"],
+            "acessos": 36
+        }
+    },
+    "2022-09-10": {
+        "hash1": {
+            "prox_passo": ["hash1-1", "hash1-2", "hash2"],
+            "flags": ["funil", "inicial"],
+            "acessos": 90
+        },
+        "hash1-1": {
+            "prox_passo": [],
+            "acessos": 12
+        },
+        "hash1-2": {
+            "prox_passo": [],
+            "acessos": 10
+        },
+        "hash2": {
+            "prox_passo": ["hash2-1", "hash3"],
+            "flags": ["funil"],
+            "acessos": 68
+        },
+        "hash2-1": {
+            "prox_passo": [],
+            "acessos": 18
+        },
+        "hash3": {
+            "prox_passo": [],
+            "flags": ["funil"],
+            "acessos": 50
+        }
+    },
+    "2022-09-09": {
+        "hash1": {
+            "prox_passo": ["hash1-1", "hash1-2", "hash2"],
+            "flags": ["funil", "inicial"],
+            "acessos": 42
+        },
+        "hash1-1": {
+            "prox_passo": [],
+            "acessos": 1
+        },
+        "hash1-2": {
+            "prox_passo": [],
+            "acessos": 3
+        },
+        "hash2": {
+            "prox_passo": ["hash2-1", "hash3"],
+            "flags": ["funil"],
+            "acessos": 38
+        },
+        "hash2-1": {
+            "prox_passo": [],
+            "acessos": 7
+        },
+        "hash3": {
+            "prox_passo": [],
+            "flags": ["funil"],
+            "acessos": 31
+        }
+    }
+}
