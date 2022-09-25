@@ -11,6 +11,7 @@ from dash.dependencies import Input, Output
 import plotly.graph_objects as go
 import plotly.express as px
 
+import pandas as pd
 
 app = Dash(__name__)
 
@@ -122,9 +123,33 @@ app.layout = html.Div(
                     className="row",
                     children=[
                         html.Div(
-                            id="map_geo_outer",
+                            id="sankey-outer",
                             className="twelve columns",
                             children=[dcc.Graph(id='sankey-transacao')],
+                            style={"textAlign": "center"}
+                        )
+                    ],
+                ),
+                html.Div(
+                    id="middle-row",
+                    className="row",
+                    children=[
+                        html.Div(
+                            id="time-series-outer",
+                            className="twelve columns",
+                            children=[dcc.Graph(id='serie-temporal-transacao')],
+                            style={"textAlign": "center"}
+                        )
+                    ],
+                ),
+                html.Div(
+                    id="bottom-row",
+                    className="row",
+                    children=[
+                        html.Div(
+                            id="funnel-outer",
+                            className="twelve columns",
+                            children=[dcc.Graph(id='funil-transacao')],
                             style={"textAlign": "center"}
                         )
                     ],
@@ -137,10 +162,12 @@ app.layout = html.Div(
 
 @app.callback(
     Output('sankey-transacao', 'figure'),
+    Output('serie-temporal-transacao', 'figure'),
+    Output('funil-transacao', 'figure'),
     Input('my-date-picker-range', 'start_date'),
     Input('my-date-picker-range', 'end_date'),
     Input('dropdown-select', 'value'))
-def update_graph(start_date, end_date, value):
+def update_sankey(start_date, end_date, value):
 
     if start_date is not None:
         start_date_object = date.fromisoformat(start_date)
@@ -152,9 +179,9 @@ def update_graph(start_date, end_date, value):
 
     if (start_date is not None) and (end_date is not None) and (value is not None):
         # cria uma lista com todas as datas entre start_date e end_date
-        datas_intervalo = [
+        datas_intervalo = sorted([
             start_date_object+timedelta(days=x) for x in range(
-                (end_date_object-start_date_object).days + 1)]
+                (end_date_object-start_date_object).days + 1)])
 
         transacao = value
         dados = dados_dict[transacao]
@@ -202,8 +229,8 @@ def update_graph(start_date, end_date, value):
                 percentuais += [
                     f'{round(porcent_ant[-1], 2)}% em relação a etapa anterior {par[0]}<br />{round(porcent_ini[-1], 2)}% em da etapa inicial {acessos_inicial_ref[0] if len(acessos_inicial_ref) > 0 else ""}']
 
-        # gerando o grafo
-        fig = go.Figure(data=[go.Sankey(
+        ## gerando o sankey
+        sankey = go.Figure(data=[go.Sankey(
             node=dict(
                 pad=15,
                 thickness=20,
@@ -223,7 +250,7 @@ def update_graph(start_date, end_date, value):
                 hovertemplate='Acessos: %{value:,.0f}<br />%{customdata}'
             ))])
 
-        fig.update_layout(
+        sankey.update_layout(
             title={
                 "text": f"Fluxo da transação <b>{transacao}</b> {'em '+start_date_string if start_date_string == end_date_string else 'de '+start_date_string + ' até ' + end_date_string}",
                 "x": 0.5,
@@ -234,8 +261,28 @@ def update_graph(start_date, end_date, value):
             plot_bgcolor='rgba(244,244,244,0.7)'
         )
 
-        return fig
+        # gerando o gráfico da série temporal
+        # transformando em registros cada um dos dados serializados no json
+        dados_normalizados = [(dia, etapa, dados[dia][etapa]["acessos"], True if dados[dia][etapa].get("flags") and "funil" in dados[dia][etapa].get("flags") else False) for dia in dados for etapa in dados[dia]]
+
+        # criando um df para ser utilizado no gráfico de linhas
+        df_linhas = pd.DataFrame(dados_normalizados, columns=["dia", "etapa", "acessos", "funil"])
+
+        # criando uma máscara para filtrar os dados de acordo as datas de início e fim escolhidas no datepicker
+        mask = (df_linhas['dia'] >= datas_intervalo[0].strftime('%Y-%m-%d')) & (df_linhas['dia'] <= datas_intervalo[-1].strftime('%Y-%m-%d'))
+        df_linhas = df_linhas.loc[mask]
+
+        linhas = px.line(df_linhas, x="dia", y="acessos", color='etapa')
+
+        # gerando o gráfico de funil
+        # filtrando o df apenas com as etapas que representam o funil de conversão
+        df_funil = df_linhas.loc[df_linhas["funil"]].groupby("etapa").sum()
+        funil = go.Figure(go.Funnel(y=df_funil.axes[0], x=df_funil["acessos"]))
+
+        return sankey, linhas, funil
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True, host="192.168.0.5")
+    app.run_server(
+        debug=False,
+    )
