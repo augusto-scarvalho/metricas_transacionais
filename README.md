@@ -1,11 +1,14 @@
 # Chatbot transactions dashboard
 
+## Sobre
+
 Um protótipo de dashboard para acompanhamento de jornadas transacionais.
 
 Usando plotly e dash para plotar os gráficos.
 
-Os dados precisam seguir o seguinte template:
+## Dados
 
+Os dados precisam seguir o seguinte template:
 ```JSON
 {
     /*Data no formato YYYY-MM-DD*/
@@ -40,3 +43,9 @@ Os dados precisam seguir o seguinte template:
     */
 }
 ```
+
+## Screenshot
+![Screenshot](https://github.com/augusto-scarvalho/metricas_transacionais/blob/main/Screenshot%202022-09-25.png)
+
+## Créditos
+Css reutilizado da [demo mapd do repo dash-sample-apps](https://github.com/plotly/dash-sample-apps/tree/main/apps/dash-mapd-demo)
